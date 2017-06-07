@@ -233,6 +233,9 @@ MOT_SENSOR_HUB_FEATURE_GR := true
 # Thermal
 USE_DEVICE_SPECIFIC_THERMAL := true
 
+# Use mke2fs to create ext4 images
+TARGET_USES_MKE2FS := true
+
 # Wifi
 BOARD_HAS_QCOM_WLAN              := true
 BOARD_HAS_QCOM_WLAN_SDK          := true
