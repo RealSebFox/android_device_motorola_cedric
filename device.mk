@@ -196,8 +196,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libgnss \
     libgnsspps \
-    android.hardware.gnss@1.1-impl-qti \
-    android.hardware.gnss@1.1-service-qti
+    android.hardware.gnss@1.0-impl-qti
 
 # Gatekeeper HAL
 PRODUCT_PACKAGES += \
