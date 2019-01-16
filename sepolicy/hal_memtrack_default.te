@@ -1,0 +1,2 @@
+allow hal_memtrack_default debugfs:file read;
+allow hal_memtrack_default debugfs:file open;
