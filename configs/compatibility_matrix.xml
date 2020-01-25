@@ -55,6 +55,51 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.lineage.livedisplay</name>
+        <version>2.0</version>
+        <interface>
+            <name>IAdaptiveBacklight</name>
+            <instance>default</instance>
+        </interface>
+        <interface>
+            <name>IPictureAdjustment</name>
+            <instance>default</instance>
+        </interface>
+        <interface>
+            <name>ISunlightEnhancement</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.lineage.power</name>
+        <version>1.0</version>
+        <interface>
+            <name>ILineagePower</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.lineage.trust</name>
+        <version>1.0</version>
+        <interface>
+            <name>IUsbRestrict</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>com.qualcomm.qti.wifidisplayhal</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IDSManager</name>
+            <instance>wifidisplaydshal</instance>
+        </interface>
+        <interface>
+            <name>IHDCPSession</name>
+            <instance>wifidisplayhdcphal</instance>
+        </interface>
+    </hal>
     <hal format="native" optional="false">
         <name>netutils-wrapper</name>
         <!--

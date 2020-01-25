@@ -25,7 +25,9 @@ BOARD_VENDOR := motorola-qcom
 WITH_LINEAGE_CHARGER := false
 
 # AIDs and CAPS
-TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/config.fs
+TARGET_FS_CONFIG_GEN += \
+    $(DEVICE_PATH)/config.fs \
+    $(DEVICE_PATH)/mot_aids.fs
 
 # Platform
 TARGET_BOARD_PLATFORM := msm8937
@@ -35,32 +37,31 @@ TARGET_BOARD_PLATFORM_GPU := qcom-adreno505
 TARGET_BOOTLOADER_BOARD_NAME := MSM8937
 TARGET_NO_BOOTLOADER := true
 
+BUILD_BROKEN_DUP_RULES := true
+
 # Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_ABI2 :=
-TARGET_CPU_VARIANT := cortex-a53
-TARGET_CPU_CORTEX_A53 := true
+TARGET_CPU_VARIANT := generic
+TARGET_CPU_VARIANT_RUNTIME := cortex-a53
+
 TARGET_2ND_ARCH := arm
 TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
-TARGET_2ND_CPU_VARIANT := cortex-a53
+TARGET_2ND_CPU_VARIANT := generic
+TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a53
+
 TARGET_USES_64_BIT_BINDER := true
 
 # Asserts
 TARGET_OTA_ASSERT_DEVICE := cedric,cedric_retail
 
 # Enable dexpreopt to speed boot time
-ifeq ($(HOST_OS),linux)
-  ifneq ($(TARGET_BUILD_VARIANT),eng)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-      WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
-    endif
-  endif
-endif
+WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
+WITH_DEXPREOPT := true
 
 # GPS
 TARGET_NO_RPC := true
@@ -68,22 +69,21 @@ USE_DEVICE_SPECIFIC_GPS := true
 BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
 
 # Kernel
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237
+BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 androidboot.usbconfigfs=false
 BOARD_KERNEL_CMDLINE += ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 vmalloc=350M androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x80000000
 BOARD_KERNEL_IMAGE_NAME := Image.gz
 BOARD_KERNEL_PAGESIZE := 2048
+BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_KERNEL_SEPARATED_DT := true
-BOARD_KERNEL_LZ4C_DT := true
 TARGET_CUSTOM_DTBTOOL := dtbTool_custom
-BOARD_DTBTOOL_ARGS := --force-v3 --motorola 1
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+BOARD_DTBTOOL_ARGS := --force-v3
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_CONFIG := cedric_defconfig
 TARGET_KERNEL_SOURCE := kernel/motorola/msm8937
 KERNEL_TOOLCHAIN := $(PWD)/prebuilts/gcc/$(HOST_OS)-x86/aarch64/aarch64-linux-android-4.9/bin
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-androidkernel-
 
 # Audio
 AUDIO_FEATURE_ENABLED_ALAC_OFFLOAD := true
@@ -122,6 +122,7 @@ BOARD_USES_ALSA_AUDIO := true
 BOARD_USES_GENERIC_AUDIO := true
 TARGET_USES_QCOM_MM_AUDIO := true
 USE_CUSTOM_AUDIO_POLICY := 1
+USE_XML_AUDIO_POLICY_CONF := 1
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
@@ -129,8 +130,6 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_QCOM := true
 
 # Camera
-TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
-    /system/vendor/bin/mm-qcamera-daemon=26
 USE_DEVICE_SPECIFIC_CAMERA := true
 BOARD_QTI_CAMERA_32BIT_ONLY := true
 
@@ -141,6 +140,7 @@ BOARD_NO_CHARGER_LED := true
 
 # Crypto
 TARGET_HW_DISK_ENCRYPTION := true
+TARGET_USES_METADATA_AS_FDE_KEY := true
 
 # Display
 BOARD_USES_ADRENO := true
@@ -149,33 +149,26 @@ TARGET_USES_C2D_COMPOSITION := true
 TARGET_USES_GRALLOC1 := true
 TARGET_USES_ION := true
 TARGET_USES_HWC2 := true
-TARGET_USES_NEW_ION_API := true
-MAX_EGL_CACHE_KEY_SIZE := 12*1024
-MAX_EGL_CACHE_SIZE := 2048*1024
-TARGET_USES_C2D_COMPOSITION := true
 MAX_VIRTUAL_DISPLAY_DIMENSION := 4096
 TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
-VSYNC_EVENT_PHASE_OFFSET_NS := 2000000
-SF_VSYNC_EVENT_PHASE_OFFSET_NS := 6000000
 
 # exfat
 TARGET_EXFAT_DRIVER := exfat
 
 # FM
 BOARD_HAVE_QCOM_FM := true
+BOARD_HAVE_FM_RADIO := true
+TARGET_QCOM_NO_FM_FIRMWARE := true
 
 # Init
-TARGET_INIT_VENDOR_LIB := libinit_cedric
-TARGET_RECOVERY_DEVICE_MODULES := libinit_cedric
+TARGET_INIT_VENDOR_LIB := //$(DEVICE_PATH):libinit_cedric
+TARGET_RECOVERY_DEVICE_MODULES := //$(DEVICE_PATH):libinit_cedric
 
 # Keymaster
 TARGET_PROVIDES_KEYMASTER := true
 
 # Lights
 TARGET_PROVIDES_LIBLIGHT := true
-
-# Lineage Hardware
-JAVA_SOURCE_OVERLAYS := org.lineageos.hardware|$(DEVICE_PATH)/lineagehw|**/*.java
 
 # Manifest
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/configs/manifest.xml
@@ -190,10 +183,19 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 33554432    #    16484 * 1024 mmcblk0p38
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 3455451136    #  3428080 * 1024 mmcblk0p53
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 26401026048 # 25782252 * 1024 mmcblk0p54
 
+BOARD_ROOT_EXTRA_SYMLINKS := \
+    /mnt/vendor/persist:/persist \
+    /vendor/firmware:/firmware \
+    /vendor/dsp:/dsp \
+    /vendor/firmware/image:firmware/image
+
+BOARD_ROOT_EXTRA_FOLDERS := dsp firmware fsg persist
+
 # Peripheral manager
 TARGET_PER_MGR_ENABLED := true
 
 # Power
+TARGET_PROVIDES_POWERHAL := true
 TARGET_HAS_NO_WLAN_STATS := true
 
 # Qualcomm support
@@ -211,11 +213,14 @@ TARGET_USERIMAGES_USE_F2FS := true
 LZMA_RAMDISK_TARGETS := recovery
 
 # RIL
-TARGET_RIL_VARIANT := caf
+TARGET_PROVIDES_QTI_TELEPHONY_JAR := true
+TARGET_USES_OLD_MNC_FORMAT := true
+TARGET_USES_ALTERNATIVE_MANUAL_NETWORK_SELECT := true
 
 # SELinux
-include device/qcom/sepolicy/sepolicy.mk
-#BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
+# include device/qcom/sepolicy/sepolicy.mk
+# BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy-minimal
 
 # Sensor
 BOARD_USES_MOT_SENSOR_HUB := true
@@ -231,14 +236,17 @@ MOT_SENSOR_HUB_FEATURE_PEDO := true
 MOT_SENSOR_HUB_FEATURE_LA := true
 MOT_SENSOR_HUB_FEATURE_GR := true
 
-# Shims
+TARGET_ENABLE_MEDIADRM_64 := true
+
+# Shim
 TARGET_LD_SHIM_LIBS := \
     /system/vendor/bin/adspd|libshim_adsp.so \
     /system/vendor/lib64/libmdmcutback.so|libqsap_shim.so \
-    /system/lib/libjustshoot.so|libjustshoot_shim.so
+    /system/vendor/lib/libjustshoot.so|libjustshoot_shim.so \
+    /system/vendor/lib/libmot_gpu_mapper.so|libgpu_mapper_shim.so
 
-# Thermal
-USE_DEVICE_SPECIFIC_THERMAL := true
+# Security patch level
+VENDOR_SECURITY_PATCH := 2018-10-01
 
 # VNDK
 PRODUCT_USE_VNDK_OVERRIDE := false
@@ -246,9 +254,11 @@ PRODUCT_USE_VNDK_OVERRIDE := false
 # Use mke2fs to create ext4 images
 TARGET_USES_MKE2FS := true
 
+# Wlan
+PRODUCT_VENDOR_MOVE_ENABLED      := true
+
 # Wifi
 BOARD_HAS_QCOM_WLAN              := true
-BOARD_HAS_QCOM_WLAN_SDK          := true
 BOARD_WLAN_DEVICE                := qcwcn
 BOARD_HOSTAPD_DRIVER             := NL80211
 BOARD_HOSTAPD_PRIVATE_LIB        := lib_driver_cmd_qcwcn
@@ -257,4 +267,6 @@ BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_qcwcn
 WIFI_DRIVER_FW_PATH_AP           := "ap"
 WIFI_DRIVER_FW_PATH_STA          := "sta"
 WIFI_DRIVER_FW_PATH_P2P          := "p2p"
+WIFI_HIDL_FEATURE_DISABLE_AP_MAC_RANDOMIZATION := true
 WPA_SUPPLICANT_VERSION           := VER_0_8_X
+TARGET_DISABLE_WCNSS_CONFIG_COPY := true

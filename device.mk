@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2016 The CyanogenMod Project
-# Copyright (C) 2017 The LineageOS Project
+# Copyright (C) 2017-2018 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
     $(LOCAL_PATH)/overlay-lineage
 
+# Soong namespaces
+PRODUCT_SOONG_NAMESPACES += device/motorola/cedric
+
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
@@ -40,6 +43,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml \
     frameworks/native/data/etc/android.hardware.telephony.cdma.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.cdma.xml \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
+    frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.accessory.xml \
     frameworks/native/data/etc/android.hardware.usb.host.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.host.xml \
@@ -60,6 +64,10 @@ PRODUCT_AAPT_CONFIG := normal
 
 # Audio
 PRODUCT_PACKAGES += \
+    android.hardware.audio@5.0-impl \
+    android.hardware.audio@2.0-service \
+    android.hardware.audio.effect@5.0-impl \
+    android.hardware.broadcastradio@1.0-impl \
     audio.primary.msm8937 \
     audio.a2dp.default \
     audio.usb.default \
@@ -67,45 +75,49 @@ PRODUCT_PACKAGES += \
     libaudio-resampler \
     libshim_adsp \
     libtinycompress \
-    audiod
-
-PRODUCT_PACKAGES += \
+    audiod \
     libqcomvisualizer \
     libqcomvoiceprocessing \
     libqcomvoiceprocessingdescriptors \
     libqcompostprocbundle
 
-PRODUCT_PACKAGES += \
-    android.hardware.audio@2.0-impl \
-    android.hardware.audio.effect@2.0-impl \
-    android.hardware.broadcastradio@1.0-impl
-
 # Audio Configurations
 PRODUCT_COPY_FILES +=  \
-    $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-    $(LOCAL_PATH)/audio/audio_policy.conf:system/vendor/etc/audio_policy.conf \
-    $(LOCAL_PATH)/audio/audio_output_policy.conf:system/vendor/etc/audio_output_policy.conf \
-    $(LOCAL_PATH)/audio/audio_platform_info_extcodec.xml:system/vendor/etc/audio_platform_info_extcodec.xml \
-    $(LOCAL_PATH)/audio/mixer_paths.xml:system/vendor/etc/mixer_paths.xml \
-    $(LOCAL_PATH)/audio/audio_ext_spkr.conf:system/vendor/etc/audio_ext_spkr.conf \
-    $(LOCAL_PATH)/audio/audio_platform_info.xml:system/vendor/etc/audio_platform_info.xml \
-    $(LOCAL_PATH)/audio/sound_trigger_mixer_paths.xml:system/vendor/etc/sound_trigger_mixer_paths.xml \
-    $(LOCAL_PATH)/audio/sound_trigger_platform_info.xml:system/vendor/etc/sound_trigger_platform_info.xml
+    $(LOCAL_PATH)/audio/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
+    $(LOCAL_PATH)/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(LOCAL_PATH)/audio/audio_output_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_output_policy.conf \
+    $(LOCAL_PATH)/audio/audio_platform_info_extcodec.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info_extcodec.xml \
+    $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/audio/audio_ext_spkr.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_ext_spkr.conf \
+    $(LOCAL_PATH)/audio/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
+    $(LOCAL_PATH)/audio/sound_trigger_mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_mixer_paths.xml \
+    $(LOCAL_PATH)/audio/sound_trigger_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sound_trigger_platform_info.xml
+
+PRODUCT_COPY_FILES += \
+    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
+    frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml
 
 # Bluetooth
 PRODUCT_PACKAGES += \
+    persist.bluetooth.bluetooth_audio_hal.disabled=true \
     libbt-vendor
 
 # Camera
 PRODUCT_PACKAGES += \
     libbson \
-    Snap \
+    Camera2 \
     camera.device@1.0-impl \
-    camera.device@3.2-impl \
-    android.hardware.camera.provider@2.4-impl \
+    camera.device@3.2-impl:32 \
+    android.hardware.camera.provider@2.4-impl:32 \
+    android.hardware.camera.provider@2.4-service \
     vendor.qti.hardware.camera.device@1.0 \
     vendor.qti.hardware.camera.device@1.0_vendor \
-    libjustshoot_shim
+    libjustshoot_shim \
+    libgpu_mapper_shim \
+    libgui_vendor
 
 # Camera Configurations
 PRODUCT_COPY_FILES += \
@@ -129,7 +141,7 @@ PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-service \
     android.hardware.graphics.composer@2.1-impl \
     android.hardware.graphics.composer@2.1-service \
-    android.hardware.graphics.mapper@2.0-impl \
+    android.hardware.graphics.mapper@2.0-impl-2.1 \
     android.hardware.memtrack@1.0-impl \
     android.hardware.memtrack@1.0-service \
     android.hardware.configstore@1.0-service \
@@ -146,7 +158,15 @@ PRODUCT_PACKAGES += \
     vendor.display.color@1.0-service \
     vendor.display.color@1.0-impl
 
-PRODUCT_PACKAGES += android.hardware.media.omx
+# HIDL
+PRODUCT_PACKAGES += \
+    android.hidl.base@1.0 \
+    android.hidl.manager@1.0 \
+    android.hidl.manager-V1.0-java
+
+# HotwordEnrollement app permissions
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/privapp-permissions-hotword.xml:system/etc/permissions/privapp-permissions-hotword.xml
 
 # RenderScript HAL
 PRODUCT_PACKAGES += \
@@ -154,7 +174,10 @@ PRODUCT_PACKAGES += \
 
 # DRM
 PRODUCT_PACKAGES += \
-    libprotobuf-cpp-lite
+    libprotobuf-cpp-lite \
+    android.hardware.drm@1.0-service \
+    android.hardware.drm@1.0-impl \
+    android.hardware.drm@1.2-service.clearkey
 
 # limit dex2oat threads to improve thermals
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -184,22 +207,22 @@ PRODUCT_PACKAGES += \
 
 # GPS Configurations
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/gps/etc/flp.conf:system/vendor/etc/flp.conf \
-    $(LOCAL_PATH)/gps/etc/gps.conf:system/vendor/etc/gps.conf \
-    $(LOCAL_PATH)/gps/etc/izat.conf:system/vendor/etc/izat.conf \
-    $(LOCAL_PATH)/gps/etc/lowi.conf:system/vendor/etc/lowi.conf \
-    $(LOCAL_PATH)/gps/etc/sap.conf:system/vendor/etc/sap.conf \
-    $(LOCAL_PATH)/gps/etc/xtwifi.conf:system/vendor/etc/xtwifi.conf \
-    $(LOCAL_PATH)/gps/etc/cacert_location.pem:system/vendor/etc/cacert_location.pem \
+    $(LOCAL_PATH)/gps/etc/flp.conf:$(TARGET_COPY_OUT_VENDOR)/etc/flp.conf \
+    $(LOCAL_PATH)/gps/etc/gps.conf:$(TARGET_COPY_OUT_VENDOR)/etc/gps.conf \
+    $(LOCAL_PATH)/gps/etc/izat.conf:$(TARGET_COPY_OUT_VENDOR)/etc/izat.conf \
+    $(LOCAL_PATH)/gps/etc/lowi.conf:$(TARGET_COPY_OUT_VENDOR)/etc/lowi.conf \
+    $(LOCAL_PATH)/gps/etc/sap.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sap.conf \
+    $(LOCAL_PATH)/gps/etc/xtwifi.conf:$(TARGET_COPY_OUT_VENDOR)/etc/xtwifi.conf \
+    $(LOCAL_PATH)/gps/etc/cacert_location.pem:$(TARGET_COPY_OUT_VENDOR)/etc/cacert_location.pem \
     $(LOCAL_PATH)/configs/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml
 
-# GPS
+# GPS / Location
 PRODUCT_PACKAGES += \
+    android.hardware.gnss@1.0-impl-qti \
+    android.hardware.gnss@1.0-service-qti \
     libgnss \
     libgnsspps \
-    android.hardware.gnss@1.1-impl-qti \
-    android.hardware.gnss@1.1-service-qti \
-    libqsap_sdk \
+    libcurl \
     libqsap_shim
 
 # Gatekeeper HAL
@@ -209,11 +232,16 @@ PRODUCT_PACKAGES += \
 
 # health
 PRODUCT_PACKAGES += \
-    android.hardware.health@2.0-service
+    android.hardware.health@2.0-service.cedric
+
+# IPACM
+PRODUCT_PACKAGES += \
+    ipacm \
+    IPACM_cfg.xml
 
 # IRSC
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/sec_config:system/vendor/etc/sec_config
+    $(LOCAL_PATH)/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
 
 # Keylayouts
 PRODUCT_COPY_FILES += \
@@ -232,18 +260,12 @@ PRODUCT_PACKAGES += \
 # Lights
 PRODUCT_PACKAGES += \
     android.hardware.light@2.0-impl \
-    android.hardware.light@2.0-service \
-    lights.msm8937
+    android.hardware.light@2.0-service.cedric
 
 # Display Calibration
 PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay@1.0-service-sdm
-
-# DRM
-PRODUCT_PACKAGES += \
-    android.hardware.drm@1.0-service \
-    android.hardware.drm@1.0-impl \
-    android.hardware.drm@1.0-service.widevine
+    vendor.lineage.livedisplay@2.0-service-sdm \
+    vendor.lineage.livedisplay@2.0-service-sysfs
 
 #PRODUCT_COPY_FILES += \
 #    $(LOCAL_PATH)/configs/qdcm_calib_data_mipi_mot_vid_inx_1080p_497.xml:system/vendor/etc/qdcm_calib_data_mipi_mot_vid_inx_1080p_497.xml \
@@ -252,6 +274,7 @@ PRODUCT_PACKAGES += \
 # Media
 PRODUCT_PACKAGES += \
     libc2dcolorconvert \
+    android.hardware.media.omx \
     libOmxAacEnc \
     libOmxAmrEnc \
     libOmxCore \
@@ -264,16 +287,16 @@ PRODUCT_PACKAGES += \
 
 # Media Configurations
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/media_codecs.xml:system/vendor/etc/media_codecs.xml \
-    $(LOCAL_PATH)/configs/media_codecs_8956.xml:system/vendor/etc/media_codecs_8956.xml \
-    $(LOCAL_PATH)/configs/media_codecs_performance.xml:system/vendor/etc/media_codecs_performance.xml \
+    $(LOCAL_PATH)/configs/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
+    $(LOCAL_PATH)/configs/media_codecs_8956.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_8956.xml \
+    $(LOCAL_PATH)/configs/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml \
     $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
-    $(LOCAL_PATH)/configs/media_profiles_8956.xml:system/vendor/etc/media_profiles_8956.xml
+    $(LOCAL_PATH)/configs/media_profiles_8956.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_8956.xml
 
 PRODUCT_COPY_FILES += \
-    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/vendor/etc/media_codecs_google_audio.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/vendor/etc/media_codecs_google_telephony.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/vendor/etc/media_codecs_google_video.xml
+    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_audio.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_telephony.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video.xml
 
 # Netutils
 PRODUCT_PACKAGES += \
@@ -284,7 +307,18 @@ PRODUCT_PACKAGES += \
 
 # Power
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.1-service-qti
+    android.hardware.power@1.2-service
+
+# Public Libraries
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/public.libraries.txt:$(TARGET_COPY_OUT_VENDOR)/etc/public.libraries.txt
+
+
+# Preopt SystemUI
+PRODUCT_DEXPREOPT_SPEED_APPS += SystemUI
+
+# Properties
+-include $(LOCAL_PATH)/device_props.mk
 
 # Qualcomm
 PRODUCT_COPY_FILES += \
@@ -301,41 +335,46 @@ PRODUCT_PACKAGES += \
     init.mmi.boot.sh \
     init.mmi.laser.sh \
     init.mmi.rc \
+    init.cedric.rc \
     init.mmi.usb.rc \
     init.qcom.rc \
-    init.qcom.ril.sh
-
-PRODUCT_COPY_FILES += \
-     $(LOCAL_PATH)/rootdir/etc/ueventd.qcom.rc:system/vendor/ueventd.rc
+    init.qcom.ril.sh \
+    ueventd.qcom.rc
 
 # Powerhint configuration file
 PRODUCT_COPY_FILES += \
-     $(LOCAL_PATH)/configs/powerhint.xml:system/etc/powerhint.xml \
+     $(LOCAL_PATH)/configs/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml \
      $(LOCAL_PATH)/configs/perfboostsconfig.xml:$(TARGET_COPY_OUT_VENDOR)/etc/perf/perfboostsconfig.xml
 
 # RIL
 PRODUCT_PACKAGES += \
     librmnetctl \
     libprotobuf-cpp-full \
-    libxml2
-
-#RIL
-PRODUCT_PACKAGES += \
-    android.hardware.radio@1.0
+    libxml2 \
+    android.hardware.radio@1.2 \
+    android.hardware.radio.config@1.0 \
+    android.hardware.secure_element@1.0
 
 # Seccomp policy
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/seccomp_policy/mediacodec.policy:system/vendor/etc/seccomp_policy/mediacodec.policy \
-    $(LOCAL_PATH)/seccomp_policy/mediaextractor.policy:system/vendor/etc/seccomp_policy/mediaextractor.policy
+    $(LOCAL_PATH)/seccomp_policy/mediacodec.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/mediacodec.policy
 
-# IMS
+# IMS & Telephony
 PRODUCT_PACKAGES += \
-    ims-ext-common \
-    qti-telephony-common \
-    telephony-ext
+    ims-ext-common_system \
+    ims_ext_common.xml \
+    telephony-ext \
+    qti-telephony-hidl-wrapper \
+    qti_telephony_hidl_wrapper.xml
 
 PRODUCT_BOOT_JARS += \
     telephony-ext
+
+PRODUCT_PACKAGES += \
+    qti-telephony-utils \
+    qti_telephony_utils.xml
+
+PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=log
 
 # Sensors
 PRODUCT_COPY_FILES += \
@@ -344,6 +383,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
+    android.hardware.sensors@1.0-service \
     libsensorhub \
     motosh \
     sensorhub.msm8937 \
@@ -352,13 +392,17 @@ PRODUCT_PACKAGES += \
     sensors.tof \
     sensors.tof.vl53l0
 
-# Shims
+# Trust HAL
 PRODUCT_PACKAGES += \
-    libqsap_shim
+    vendor.lineage.trust@1.0-service
 
 # Thermal
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/thermal-engine-cedric.conf:system/vendor/etc/thermal-engine.conf
+    $(LOCAL_PATH)/configs/thermal-engine.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-engine.conf
+
+# Touch HAL
+PRODUCT_PACKAGES += \
+    vendor.lineage.touch@1.0-service.cedric
 
 # TextClassifier smart selection model files
 PRODUCT_PACKAGES += \
@@ -366,15 +410,24 @@ PRODUCT_PACKAGES += \
 
 # USB
 PRODUCT_PACKAGES += \
-    android.hardware.usb@1.0-service.cedric
+    android.hardware.usb@1.0-service.basic
+
+PRODUCT_COPY_FILES += \
+    prebuilts/vndk/v28/arm64/arch-arm64-armv8-a/shared/vndk-sp/libbase.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libbase-v28.so
 
 # Vibrator
 PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-impl \
-    android.hardware.vibrator@1.0-service
+    android.hardware.vibrator@1.0-service.cedric
 
 PRODUCT_PACKAGES += \
     vndk-sp
+
+#Thermal
+PRODUCT_PACKAGES += \
+    android.hardware.thermal@1.0-impl \
+    android.hardware.thermal@1.0-service \
+    thermal.msm8937
 
 # Wifi
 PRODUCT_PACKAGES += \
@@ -382,25 +435,13 @@ PRODUCT_PACKAGES += \
     hostapd \
     libqsap_sdk \
     libwpa_client \
+    libQWiFiSoftApCfg \
+    tcpdump \
     wcnss_service \
     wificond \
     wifilogd \
     wpa_supplicant \
     wpa_supplicant.conf
-
-#Thermal
-PRODUCT_PACKAGES += android.hardware.thermal@1.0-impl \
-                    android.hardware.thermal@1.0-service \
-                    thermal.msm8937
-
-PRODUCT_PACKAGES += \
-    libcurl \
-    libQWiFiSoftApCfg \
-    wificond \
-    wifilogd \
-    tcpdump \
-    wcnss_service \
-    libwpa_client
 
 # Wifi Configurations
 PRODUCT_COPY_FILES += \
@@ -409,17 +450,18 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
-# TEMP FIX
+# Wi-Fi Display
 PRODUCT_PACKAGES += \
-    android.hidl.base@1.0 \
-    android.hidl.manager@1.0
+    libaacwrapper \
+    libnl
+
+PRODUCT_BOOT_JARS += \
+    WfdCommon
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.config.vc_call_vol_steps=7 \
-	ro.config.media_vol_steps=20
+	ro.config.media_vol_steps=25
 
 PRODUCT_GMS_CLIENTID_BASE := android-motorola
-
-PRODUCT_VENDOR_KERNEL_HEADERS := hardware/qcom/msm8996/kernel-headers

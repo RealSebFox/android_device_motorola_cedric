@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
-
+#include <sys/sysinfo.h>
 #include <android-base/properties.h>
 #include "property_service.h"
 #include "vendor_init.h"
@@ -55,6 +55,18 @@ void property_override_dual(char const system_prop[], char const vendor_prop[],
     property_override(vendor_prop, value);
 }
 
+/* Get Ram size for different variants */
+void check_device()
+{
+    struct sysinfo sys;
+    sysinfo(&sys);
+    if (sys.totalram > 2048ull * 1024 * 1024) {
+        property_set("ro.boot.ram", "3GB");
+    } else {
+        property_set("ro.boot.ram", "2GB");
+    }
+}
+
 void num_sims() {
     std::string dualsim;
 
@@ -70,24 +82,16 @@ void num_sims() {
 
 void vendor_load_properties()
 {
-    std::string platform = android::base::GetProperty("ro.board.platform", "");
-
-    if (platform != ANDROID_TARGET)
-        return;
 
     // sku
     std::string sku = android::base::GetProperty("ro.boot.hardware.sku", "");
     property_override_dual("ro.product.model", "ro.vendor.product.model", sku.c_str());
 
-    // fingerprint
-    property_override("ro.build.description", "cedric-7.0/NPPS25.137-72-4/4:user/release-keys");
-    property_override_dual("ro.build.fingerprint", "ro.vendor.build.fingerprint", "motorola/cedric/cedric:7.0/NPPS25.137-72-4/4:user/release-keys");
-
     // rmt_storage
     std::string device = android::base::GetProperty("ro.boot.device", "");
     std::string radio = android::base::GetProperty("ro.boot.radio", "");
-    property_set("ro.hw.device", device.c_str());
-    property_set("ro.hw.radio", radio.c_str());
+    property_set("ro.vendor.hw.device", device.c_str());
+    property_set("ro.vendor.hw.radio", radio.c_str());
     property_set("ro.hw.fps", "true");
     property_set("ro.hw.imager", "13MP");
 

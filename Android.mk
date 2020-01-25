@@ -287,7 +287,7 @@ $(RFS_MSM_MPSS_SYMLINKS): $(LOCAL_INSTALLED_MODULE)
 ALL_DEFAULT_INSTALLED_MODULES += $(RFS_MSM_ADSP_SYMLINKS) $(RFS_MSM_MPSS_SYMLINKS) $(RFS_MSM_SLPI_SYMLINKS)
 
 IMS_LIBS := libimscamera_jni.so libimsmedia_jni.so
-IMS_SYMLINKS := $(addprefix $(TARGET_OUT_APPS_PRIVILEGED)/ims/lib/arm64/,$(notdir $(IMS_LIBS)))
+IMS_SYMLINKS := $(addprefix $(TARGET_OUT_APPS)/ims/lib/arm64/,$(notdir $(IMS_LIBS)))
 $(IMS_SYMLINKS): $(LOCAL_INSTALLED_MODULE)
 	@echo "IMS lib link: $@"
 	@mkdir -p $(dir $@)
@@ -302,6 +302,24 @@ $(NUKE_NOTEPAD): $(LOCAL_INSTALLED_MODULE)
 	@rm -rf $@
 
 ALL_DEFAULT_INSTALLED_MODULES += $(NUKE_NOTEPAD)
+
+PARTITIONS_TO_LINK := dsp fsg
+
+VENDOR_SUBPARTS_SYMLINKS := $(addprefix $(TARGET_OUT_VENDOR)/, $(notdir $(PARTITIONS_TO_LINK)))
+$(VENDOR_SUBPARTS_SYMLINKS): $(LOCAL_INSTALLED_MODULE)
+	@echo "Vendor linked partition: $@"
+	@mkdir -p $(dir $@)
+	@rm -rf $@
+	$(hide) ln -sf /$(notdir $@) $@
+
+FIRMWARE_SYMLINK := $(TARGET_OUT_VENDOR)/firmware_mnt
+$(FIRMWARE_SYMLINK): $(LOCAL_INSTALLED_MODULE)
+	@echo "Vendor linked partition: $@"
+	@mkdir -p $(dir $@)
+	@rm -rf $@
+	$(hide) ln -sf /firmware $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(VENDOR_SUBPARTS_SYMLINKS) $(FIRMWARE_SYMLINK)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
 

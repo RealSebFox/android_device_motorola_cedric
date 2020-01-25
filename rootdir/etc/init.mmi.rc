@@ -1,5 +1,5 @@
 # Moto USB configuration
-import /system/vendor/etc/init/hw/init.mmi.usb.rc
+import /vendor/etc/init/hw/init.mmi.usb.rc
 
 on early-boot
     write /sys/module/subsystem_restart/parameters/disable_restart_work 0x0
@@ -22,6 +22,9 @@ on fs
     symlink /persist /pds
 
 on post-fs
+    # set RLIMIT_MEMLOCK to 64MB
+    setrlimit 8 67108864 67108864
+
     mkdir /persist/camera 0755 oem_5004 oem_5004
     mkdir /persist/camera/focus 0775 camera oem_5004
     mkdir /persist/camera/ledcal 0775 camera oem_5004
@@ -113,7 +116,7 @@ on post-fs-data
     mkdir /data/system/dropbox-add 0730 system diag
 
     # Create directory for cutback
-    mkdir /data/misc/cutback 0770 radio wifi
+    mkdir /data/vendor/misc/cutback 0770 radio wifi
 
     # Create directory for fm_radio
     mkdir /data/misc/fm_radio 0770 system system
@@ -160,11 +163,6 @@ on post-fs-data
 
     #setup folder for WLAN WAPI
     chmod 0770 /data/wapi_certificate
-
-    # Enable directory writer xattr for 2nd level directory /storage/emulated/xx/yy
-    setfattr /data/media user.dwriter /%s/%s 0
-    # Enable relatime for /storage/emulated/xx/Download
-    setfattr /data/media user.relatime /%s/Download:com.motorola.mya 0
 
 on boot
    # restore default console_loglevel to KERN_DEBUG
@@ -225,13 +223,6 @@ on boot
    chown system system /sys/class/leds/charging/brightness
    chmod 0664 /sys/class/leds/charging/brightness
 
-   # Change ownership for Dynamic-CABC feature
-   chown system system /sys/class/graphics/fb0/cabc_mode
-   # Change ownership for for HBM feature
-   chown system system /sys/class/graphics/fb0/hbm
-   # Change ownership for for ACL feature
-   chown system system /sys/class/graphics/fb0/acl_mode
-
    # Change ownership and permission for vibrator
    chown system system /sys/class/timed_output/vibrator/enable
    chmod 0660 /sys/class/timed_output/vibrator/enable
@@ -283,7 +274,7 @@ on boot
    chmod 0660 /persist/chargeonly/cooldown
 
 # Pass carrier to wlan
-service vendor.init_wifi /system/vendor/bin/sh /system/vendor/bin/wlan_carrier_bin.sh
+service vendor.init_wifi /vendor/bin/sh /vendor/bin/wlan_carrier_bin.sh
     class main
     user root
     group root
@@ -301,7 +292,7 @@ on charger
 on moto-charger
     setprop ro.board.platform msm8937
     trigger firmware_mounts_complete
-    start vendor.charge_only_mode
+    start vendor.charger
     start vendor.thermal-com
 
 on property:ro.boot.dualsim=true
@@ -315,25 +306,25 @@ on property:ro.boot.dualsim=false
 on property:ro.boot.hwrev=*
    start vendor.mmi-boot-sh
 
-service adspd /system/vendor/bin/adspd
+service adspd /vendor/bin/adspd
    class main
    socket adspdsock stream 0660 system audio
    user audio
    group audio input diag
 
-service vendor.mmi-boot-sh /system/vendor/bin/sh /system/vendor/bin/init.mmi.boot.sh
+service vendor.mmi-boot-sh /vendor/bin/sh /vendor/bin/init.mmi.boot.sh
     class core
     user root
     oneshot
     disabled
 
-service mmi-laser-sh /system/vendor/bin/sh /system/vendor/bin/init.mmi.laser.sh
+service mmi-laser-sh /vendor/bin/sh /vendor/bin/init.mmi.laser.sh
     class core
     user root
     oneshot
 
 # Start Sensor daemon
-service motosh /system/vendor/bin/motosh boot
+service motosh /vendor/bin/motosh boot
     class main
     user compass
     group compass misc input
@@ -344,7 +335,7 @@ service vendor.charge_only_mode /system/bin/charge_only_mode
     group graphics system input
     disabled
 
-service vendor.thermal-com /system/vendor/bin/thermal-engine --minimode
+service vendor.thermal-com /vendor/bin/thermal-engine --minimode
     class main
     user root
     disabled
@@ -365,5 +356,7 @@ on property:ro.bootmode=normal
    write /sys/module/usb3813_hub/parameters/boost_val 3
 
 on property:sys.boot_completed=1
-    # Enable ZRAM on boot_complete
-    swapon_all /system/vendor/etc/fstab.qcom
+    #Configure mtp rx/tx req len for msm8937
+    write /sys/module/g_android/parameters/mtp_rx_req_len 1048576
+    write /sys/module/g_android/parameters/mtp_tx_req_len 16384
+    write /sys/class/android_usb/android0/f_rndis_qc/rndis_transports " "

@@ -31,11 +31,13 @@
 /data/chargeonlymode(/.*)?                               u:object_r:chargeonly_data_file:s0
 
 # Fingerprint
-/data/.fps(/.*)?                                         u:object_r:fingerprintd_data_file:s0
-/data/fpc                                                u:object_r:fingerprintd_data_file:s0
+/data/\.fps(/.*)?                                         u:object_r:fps_data_file:s0
+/data/fpc(/.*)?                                          u:object_r:fpc_data_file:s0
 /data/fpc/socket                                         u:object_r:fpc_socket:s0
 
+
 /sys/devices/soc/7af8000.spi/spi_master/spi8/spi8.0(/.*)? u:object_r:sysfs_fpc:s0
+/sys/devices/soc/soc:fpc_fpc1020(/.*)?		u:object_r:sysfs_fpc:s0
 
 # Modem
 /persist/mdm(/.*)?                                       u:object_r:persist_modem_file:s0
@@ -60,7 +62,7 @@
 
 /data/local/dbvc(/.*)?                                   u:object_r:dbvc_data_file:s0
 /data/local/moodle(/.*)?                                 u:object_r:moodle_data_file:s0
-/data/misc/cutback(/.*)?                                 u:object_r:cutback_data_file:s0
+/data/vendor/misc/cutback(/.*)?                          u:object_r:cutback_data_file:s0
 
 /data/misc/sds(/.*)?                                     u:object_r:sds_data_file:s0
 
@@ -136,5 +138,21 @@
 # Fingerprint custom hal
 /(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service_32 u:object_r:hal_fingerprint_default_exec:s0
 
-# Usb hal
-/(vendor|system/vendor)/bin/hw/android\.hardware\.usb@1\.0-service\.cedric       u:object_r:hal_usb_default_exec:s0
+# Fingerprint custom hal
+/(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-fpcservice u:object_r:hal_fingerprint_default_exec:s0
+
+/(vendor|system/vendor)/bin/hw/android\.hardware\.health@2\.0-service\.cedric        u:object_r:hal_health_default_exec:s0
+
+/(vendor|system/vendor)/bin/hw/android\.hardware\.vibrator@1\.0-service.cedric   u:object_r:hal_vibrator_default_exec:s0
+/sys/devices/virtual/timed_output/vibrator/vtg_default                            u:object_r:sysfs_vibrator:s0
+/sys/devices/virtual/timed_output/vibrator/vtg_level                            u:object_r:sysfs_vibrator:s0
+/sys/devices/virtual/timed_output/vibrator/vtg_min                            u:object_r:sysfs_vibrator:s0
+/sys/devices/virtual/timed_output/vibrator/vtg_max                            u:object_r:sysfs_vibrator:s0
+
+/system/vendor/bin/hw/android\.hardware\.light@2\.0-service.cedric        u:object_r:hal_light_default_exec:s0
+/sys/devices/soc/1a00000.qcom,mdss_mdp/1a00000.qcom,mdss_mdp:qcom,mdss_fb_primary/leds/lcd-backlight/brightness	u:object_r:sysfs_leds:s0
+/sys/devices/soc/leds-atc-20/leds/charging/brightness	u:object_r:sysfs_leds:s0
+
+/(vendor|system/vendor)/bin/hw/android\.hardware\.drm@1\.1-service\.widevine            u:object_r:hal_drm_widevine_exec:s0
+/(vendor|system/vendor)/bin/hw/android\.hardware\.drm@1\.1-service\.clearkey            u:object_r:hal_drm_clearkey_exec:s0
+/(vendor|system/vendor)/bin/hw/vendor\.lineage\.touch@1\.0-service\.cedric              u:object_r:hal_lineage_touch_default_exec:s0
